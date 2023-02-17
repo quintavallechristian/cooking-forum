@@ -2,16 +2,14 @@ from website.controllers.AuthController import login, signup
 from werkzeug.security import generate_password_hash
 from website.models import User
 from website import db, mail
+from website.config import TestingConfig
 import unittest
 from flask import Flask
 
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.app = Flask(__name__)
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbtest.sqlite'
-        self.app.config['SECRET_KEY'] = 'test_token'
-        self.app.config['TESTING'] = True
-        self.app.config['MAIL_FROM_NAME'] = 'test@test.com'
+        self.app.config.from_object(TestingConfig())
         db.init_app(self.app)
         mail.init_app(self.app)
         with self.app.app_context():
@@ -19,7 +17,7 @@ class TestClass(unittest.TestCase):
 
     def tearDown(self):
         self.app = Flask(__name__)
-        self.app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///dbtest.sqlite'
+        self.app.config.from_object(TestingConfig())
         db.init_app(self.app)
         with self.app.app_context():
             db.drop_all()
