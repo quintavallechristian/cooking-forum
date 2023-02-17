@@ -16,12 +16,10 @@ def create_app():
     db.init_app(app)
     mail.init_app(app)
 
-    from .auth import auth
     from .api import api
     from .views import views
     from . import models
     
-    app.register_blueprint(auth)
     app.register_blueprint(api, url_prefix='/api')
     app.register_blueprint(views)
 

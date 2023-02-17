@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Flask Auth Example</title>
+    <title>Cooking forum auth</title>
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -19,27 +19,6 @@
                         Home
                     </a>
                 </div>
-                <div>
-                <a href="{{ url_for('views.profile') }}">
-                    Profile
-                </a>
-            </div>
-            <div>
-                <a href="{{ url_for('auth.login') }}">
-                    Login
-                </a>
-            </div>
-            <div>
-                <a href="{{ url_for('auth.signup') }}">
-                    Sign Up
-                </a>
-            </div>
-            <div  class="ml-auto">
-                <a href="{{ url_for('auth.logout') }}">
-                    Logout
-                </a>
-            </div>
-        
             </nav>
         </div>
 

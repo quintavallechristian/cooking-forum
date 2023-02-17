@@ -1,9 +1,13 @@
 from website.models import User
 from  werkzeug.security import generate_password_hash
+from faker import Faker
+fake = Faker()
 
 
 def test_new_user():
-    user = User(email = 'christian@gmail.com', password = generate_password_hash('testPassword'), name = 'Christian')
-    assert user.email == 'christian@gmail.com'
+    email = fake.email()
+    name = fake.name()
+    user = User(email = email, password = generate_password_hash('testPassword'), name = name)
+    assert user.email == email
     assert user.password != 'testPassword'
-    assert user.name == 'Christian'
+    assert user.name == name

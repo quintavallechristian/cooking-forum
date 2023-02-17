@@ -7,7 +7,8 @@ from functools import wraps
 from .models import User
 from . import db
 from .controllers import AuthController
-from .controllers.UserController import getUser
+from .controllers import ValidationController
+from .controllers.UserController import getUser, getUsers
 
 from flask import current_app
 
@@ -19,8 +20,10 @@ def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = None
-        if 'x-access-token' in request.headers:
-            token = request.headers['x-access-token']
+        #check bearer token
+
+        if 'Authorization' in request.headers:
+            token = request.headers['Authorization'].replace('Bearer ', '')
         if not token:
             return jsonify({'error' : 'missing auth token'}), 401
   
@@ -37,19 +40,11 @@ def token_required(f):
   
     return decorated
   
-@api.route('/user', methods =['GET'])
+@api.route('/users', methods =['GET'])
 @token_required
 def get_all_users(current_user):
-    users = User.query.all()
-    output = []
-    for user in users:
-        output.append({
-            'id': user.id,
-            'name' : user.name,
-            'email' : user.email
-        })
-  
-    return jsonify({'users': output})
+    users = getUsers()
+    return jsonify({'users': users})
   
 @api.route('/login', methods =['POST'])
 def login():
@@ -79,9 +74,17 @@ def verify():
 @api.route('/signup', methods =['POST'])
 def signup():
     data = request.json
-    name, email = data.get('name'), data.get('email')
+    name = data.get('name')
+    email = data.get('email')
     password = data.get('password')
     has2fa = data.get('has2fa')
+
+    isValid, validationMessage = ValidationController.validateAll(name, email, password, has2fa)
+    if(not isValid):
+        return make_response(
+            jsonify({'error': validationMessage}),
+            403,
+        )
     
     response, code = AuthController.signup((name, email, password, has2fa))
 

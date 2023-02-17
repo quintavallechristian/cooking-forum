@@ -5,6 +5,9 @@ from website import db, mail
 from website.config import TestingConfig
 import unittest
 from flask import Flask
+from faker import Faker
+
+fake = Faker()
 
 class TestClass(unittest.TestCase):
     def setUp(self):
@@ -24,34 +27,38 @@ class TestClass(unittest.TestCase):
 
     def test_correct_login(self):
         with self.app.app_context():
-            user = User(email = 'christian@gmail.com', password = generate_password_hash('testPassword'), name = 'Christian')
+            theMail = fake.email()
+            user = User(email = theMail, password = generate_password_hash('testPassword'), name = fake.name())
             db.session.add(user)
             db.session.commit()
-            response, code = login('christian@gmail.com', 'testPassword')
+            response, code = login(theMail, 'testPassword')
             assert 'token' in response
             assert code == 201
     
     def test_correct_login_with_otp_sent(self):
         with self.app.app_context():
-            user = User(email = 'christian@gmail.com', password = generate_password_hash('testPassword'), name = 'Christian', has2fa = True)
+            theMail = fake.email()
+            user = User(email = theMail, password = generate_password_hash('testPassword'), name = fake.name(), has2fa = True)
             db.session.add(user)
             db.session.commit()
-            response, code = login('christian@gmail.com', 'testPassword')
+            response, code = login(theMail, 'testPassword')
             assert 'message' in response
             assert response['message'] == 'check your email'
             assert code == 200
 
     def test_verifiy_otp(self):
         with self.app.app_context():
-            user = User(email = 'christian@gmail.com', password = generate_password_hash('testPassword'), name = 'Christian', has2fa = True, currentOtp = '123456')
+            theMail = fake.email()
+            user = User(email = theMail, password = generate_password_hash('testPassword'), name = fake.name(), has2fa = True, currentOtp = '123456')
             db.session.add(user)
             db.session.commit()
-            response, code = login('christian@gmail.com', 'testPassword', '123456')
+            response, code = login(theMail, 'testPassword', '123456')
             assert 'token' in response
             assert code == 201
 
     def test_missing_user_login(self):
         with self.app.app_context():
+            theMail = fake.email()
             response, code = login('wrong_email', 'wrong_psw')
             assert 'error' in response
             assert response['error'] == 'Could not verify user'
@@ -59,32 +66,36 @@ class TestClass(unittest.TestCase):
 
     def test_wrong_credentials_login(self):
         with self.app.app_context():
-            user = User(email = 'christian@gmail.com', password = generate_password_hash('testPassword'), name = 'Christian', has2fa = True, currentOtp = '123456')
+            theMail = fake.email()
+            user = User(email = theMail, password = generate_password_hash('testPassword'), name = fake.name(), has2fa = True, currentOtp = '123456')
             db.session.add(user)
             db.session.commit()
-            response, code = login('christian@gmail.com', 'wrong_psw')
+            response, code = login(theMail, 'wrong_psw')
             assert 'error' in response
             assert response['error'] == 'Wrong email or password'
             assert code == 401
 
     def test_wrong_verifiy_otp(self):
         with self.app.app_context():
-            user = User(email = 'christian@gmail.com', password = generate_password_hash('testPassword'), name = 'Christian', has2fa = True, currentOtp = '123456')
+            theMail = fake.email()
+            user = User(email = theMail, password = generate_password_hash('testPassword'), name = fake.name(), has2fa = True, currentOtp = '123456')
             db.session.add(user)
             db.session.commit()
-            response, code = login('christian@gmail.com', 'testPassword', '000000')
+            response, code = login(theMail, 'testPassword', '000000')
             assert 'error' in response
             assert response['error'] == 'Could not verify otp'
-            assert code == 401
+            code == 401
 
     def test_successful_signup(self):
         with self.app.app_context():
-            response, code = signup(('Christian', 'christian@gmail.com', 'testPassword', False))
+            theMail = fake.email()
+            theName = fake.name()
+            response, code = signup((theName, theMail, 'testPassword', False))
             user = User.query\
-                .filter_by(email = 'christian@gmail.com')\
+                .filter_by(email = theMail)\
                 .first()
             assert user.password != 'testPassword'
-            assert user.name == 'Christian'
+            assert user.name == theName
             assert not user.has2fa
             assert 'message' in response
             assert response['message'] == 'Successfully registered.'
@@ -92,10 +103,11 @@ class TestClass(unittest.TestCase):
 
     def test_already_present_user_signup(self):
         with self.app.app_context():
-            user = User(email = 'christian@gmail.com', password = generate_password_hash('testPassword'), name = 'Christian', has2fa = True, currentOtp = '123456')
+            theMail = fake.email()
+            user = User(email = theMail, password = generate_password_hash('testPassword'), name = fake.name(), has2fa = True, currentOtp = '123456')
             db.session.add(user)
             db.session.commit()
-            response, code = signup(('Christian', 'christian@gmail.com', 'testPassword', False))
+            response, code = signup((fake.name(), theMail, 'testPassword', False))
             assert 'message' in response
             assert response['message'] == 'User already exists. Please Log in.'
             assert code == 201
