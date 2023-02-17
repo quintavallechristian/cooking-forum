@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Flask Auth Example</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body>
+    <section class="">
+
+        <div class="">
+            <nav class="w-full flex gap-4 bg-emerald-500 py-4 px-10">
+                <div >
+                    <a href="{{ url_for('views.index') }}">
+                        Home
+                    </a>
+                </div>
+                <div>
+                <a href="{{ url_for('views.profile') }}">
+                    Profile
+                </a>
+            </div>
+            <div>
+                <a href="{{ url_for('auth.login') }}">
+                    Login
+                </a>
+            </div>
+            <div>
+                <a href="{{ url_for('auth.signup') }}">
+                    Sign Up
+                </a>
+            </div>
+            <div  class="ml-auto">
+                <a href="{{ url_for('auth.logout') }}">
+                    Logout
+                </a>
+            </div>
+        
+            </nav>
+        </div>
+
+        <div class="hero-body">
+            <div class="w-full">
+               {% block content %}
+               {% endblock %}
+            </div>
+        </div>
+    </section>
+</body>
+
+</html>
