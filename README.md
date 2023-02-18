@@ -92,5 +92,5 @@ docker run --publish 5000:5000 quintavallechristian/cooking-forum
 The image comes with a predefined .env containing only the mandatory fields. In this case emails will not be sent. If you wish to enable the email service you must provide a proper .env file running this command instead.
 
 ```bash
-docker run --env-file=.env --publish 5000:5000 quintavallechristian/cooking-forum
+docker run --env-file={pathTo.envFile} --publish 5000:5000 quintavallechristian/cooking-forum
 ```
