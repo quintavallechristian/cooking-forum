@@ -1,0 +1,125 @@
+openapi: '3.0.2'
+info:
+  title: Test api
+  version: '1.0'
+servers:
+  - url: http://127.0.0.1:8000
+
+paths:
+  /login:
+    post:
+      summary: Login the user
+      tags:
+        - Login
+      requestBody:
+        description: Login schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginSchema'
+      
+      responses:
+        '200':
+          description: Successfully logged in. JWT Token created
+        '201':
+          description: OTP created. Email sent
+        '400':
+          description: Could not verify. Missing email or password
+        '404':
+          description: Could not verify user
+        '401':
+          description: Wrong email or password
+  /signup:
+    post:
+      summary: Signup the user
+      tags:
+        - Signup
+      requestBody:
+        description: Signup schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupSchema'
+      
+      responses:
+        '201':
+          description: Successfully registered.
+        '200':
+          description: User already exists. Please Log in.
+        '400':
+          description: Missing or invalid required data
+
+  /verifiy:
+    post:
+      summary: Verifies user otp
+      tags:
+        - Verify
+      requestBody:
+        description: Verify schema
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VerifySchema'
+      
+      responses:
+        '200':
+          description: Successfully logged in. JWT Token created
+        '400':
+          description: Could not verify. Missing email, password or otp
+        '404':
+          description: Could not verify user
+        '401':
+          description: Wrong email or password / Could not verify otp
+        '500':
+          description: Error sending the validation email
+
+  /users:
+    get:
+      summary: Get a list of the users
+      tags:
+        - Users
+      security:
+        - bearerAuth: ['#/components/securitySchemas/bearerAuth']
+      
+      responses:
+        '200':
+          description: List of users
+        '400':
+          description: Missing auth token
+        '401':
+          description: Invalid token
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    SignupSchema:
+      type: object
+      properties:
+        name: 
+          type: string
+        password: 
+          type: string
+        email: 
+          type: string
+        has2fa: 
+          type: boolean
+    LoginSchema:
+      type: object
+      properties:
+        password: 
+          type: string
+        email: 
+          type: string
+    VerifySchema:
+      type: object
+      properties:
+        password: 
+          type: string
+        email: 
+          type: string
+        otp: 
+          type: string
+

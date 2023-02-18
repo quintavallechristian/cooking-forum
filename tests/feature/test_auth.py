@@ -38,7 +38,7 @@ class TestClass(unittest.TestCase):
             db.session.commit()
             response, code = login(theMail, "testPassword")
             assert "token" in response
-            assert code == 201
+            assert code == 200
 
     def test_correct_login_with_otp_sent(self):
         with self.app.app_context():
@@ -53,8 +53,8 @@ class TestClass(unittest.TestCase):
             db.session.commit()
             response, code = login(theMail, "testPassword")
             assert "message" in response
-            assert response["message"] == "check your email"
-            assert code == 200
+            assert response["message"] == "Check your email"
+            assert code == 201
 
     def test_correct_login_with_otp_not_sent(self):
         with self.app.app_context():
@@ -73,7 +73,7 @@ class TestClass(unittest.TestCase):
             assert response["error"] == "Error sending the validation email"
             assert code == 500
 
-    def test_verifiy_otp(self):
+    def test_verify_otp(self):
         with self.app.app_context():
             theMail = fake.email()
             user = User(
@@ -87,7 +87,7 @@ class TestClass(unittest.TestCase):
             db.session.commit()
             response, code = login(theMail, "testPassword", "123456")
             assert "token" in response
-            assert code == 201
+            assert code == 200
 
     def test_missing_user_login(self):
         with self.app.app_context():
@@ -95,7 +95,7 @@ class TestClass(unittest.TestCase):
             response, code = login("wrong_email", "wrong_psw")
             assert "error" in response
             assert response["error"] == "Could not verify user"
-            assert code == 401
+            assert code == 404
 
     def test_wrong_credentials_login(self):
         with self.app.app_context():
@@ -159,4 +159,4 @@ class TestClass(unittest.TestCase):
             response, code = signup((fake.name(), theMail, "testPassword", False))
             assert "message" in response
             assert response["message"] == "User already exists. Please Log in."
-            assert code == 201
+            assert code == 200

@@ -26,7 +26,7 @@ def token_required(f):
         if "Authorization" in request.headers:
             token = request.headers["Authorization"].replace("Bearer ", "")
         if not token:
-            return jsonify({"error": "missing auth token"}), 401
+            return jsonify({"error": "Missing auth token"}), 401
 
         try:
             data = jwt.decode(
@@ -34,7 +34,7 @@ def token_required(f):
             )
             current_user = User.query.filter_by(id=data["id"]).first()
         except:
-            return jsonify({"error": "invalid token"}), 401
+            return jsonify({"error": "Invalid token"}), 401
         return f(current_user, *args, **kwargs)
 
     return decorated
@@ -53,8 +53,8 @@ def login():
 
     if not auth or not auth.get("email") or not auth.get("password"):
         return make_response(
-            jsonify({"error": "Could not verify"}),
-            403,
+            jsonify({"error": "Could not verify. Missing email or password"}),
+            400,
         )
     response, code = AuthController.login(auth.get("email"), auth.get("password"))
     return make_response(jsonify(response), code)
@@ -71,8 +71,8 @@ def verify():
         or not auth.get("otp")
     ):
         return make_response(
-            jsonify({"error": "Could not verify"}),
-            403,
+            jsonify({"error": "Could not verify. Missing email, password or otp"}),
+            400,
         )
     response, code = AuthController.login(
         auth.get("email"), auth.get("password"), auth.get("otp")
@@ -95,7 +95,7 @@ def signup():
     if not isValid:
         return make_response(
             jsonify({"error": validationMessage}),
-            403,
+            400,
         )
 
     response, code = AuthController.signup((name, email, password, has2fa))

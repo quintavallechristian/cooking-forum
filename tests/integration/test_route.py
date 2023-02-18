@@ -45,7 +45,7 @@ class TestClass(unittest.TestCase):
             )
 
             assert "token" in response.get_json()
-            assert response.status_code == 201
+            assert response.status_code == 200
 
     def test_correct_login_with_otp_sent(self):
         with self.app.app_context():
@@ -64,8 +64,8 @@ class TestClass(unittest.TestCase):
             )
 
             assert "message" in response.get_json()
-            assert response.get_json()["message"] == "check your email"
-            assert response.status_code == 200
+            assert response.get_json()["message"] == "Check your email"
+            assert response.status_code == 201
 
     def test_correct_login_with_otp_not_sent(self):
         with self.app.app_context():
@@ -107,7 +107,7 @@ class TestClass(unittest.TestCase):
             )
 
             assert "token" in response.get_json()
-            assert response.status_code == 201
+            assert response.status_code == 200
 
     def test_missing_user_login(self):
         with self.app.app_context():
@@ -117,15 +117,15 @@ class TestClass(unittest.TestCase):
 
             assert "error" in response.get_json()
             assert response.get_json()["error"] == "Could not verify user"
-            assert response.status_code == 401
+            assert response.status_code == 404
 
     def test_missing_params_login(self):
         with self.app.app_context():
             response = self.client.post("/api/login", json={"email": "wrong_email"})
 
             assert "error" in response.get_json()
-            assert response.get_json()["error"] == "Could not verify"
-            assert response.status_code == 403
+            assert response.get_json()["error"] == "Could not verify. Missing email or password"
+            assert response.status_code == 400
 
     def test_missing_params_verify(self):
         with self.app.app_context():
@@ -134,8 +134,8 @@ class TestClass(unittest.TestCase):
             )
 
             assert "error" in response.get_json()
-            assert response.get_json()["error"] == "Could not verify"
-            assert response.status_code == 403
+            assert response.get_json()["error"] == "Could not verify. Missing email or password"
+            assert response.status_code == 400
 
     def test_wrong_credentials_login(self):
         with self.app.app_context():
@@ -228,7 +228,7 @@ class TestClass(unittest.TestCase):
             assert (
                 response.get_json()["message"] == "User already exists. Please Log in."
             )
-            assert response.status_code == 201
+            assert response.status_code == 200
 
     def test_wrong_email_format_signup(self):
         with self.app.app_context():
@@ -246,7 +246,7 @@ class TestClass(unittest.TestCase):
             assert user == None
             assert "error" in response.get_json()
             assert response.get_json()["error"] == "Invalid email."
-            assert response.status_code == 403
+            assert response.status_code == 400
 
     def test_wrong_name_format_signup(self):
         with self.app.app_context():
@@ -264,9 +264,9 @@ class TestClass(unittest.TestCase):
             assert user == None
             assert "error" in response.get_json()
             assert response.get_json()["error"] == "Invalid name."
-            assert response.status_code == 403
+            assert response.status_code == 400
 
-    def test_wrong_email_format_signup(self):
+    def test_wrong_password_format_signup(self):
         with self.app.app_context():
             response = self.client.post(
                 "/api/signup",
@@ -282,9 +282,9 @@ class TestClass(unittest.TestCase):
             assert user == None
             assert "error" in response.get_json()
             assert response.get_json()["error"] == "Invalid password."
-            assert response.status_code == 403
+            assert response.status_code == 400
 
-    def test_wrong_email_format_signup(self):
+    def test_wrong_2fa_format_signup(self):
         with self.app.app_context():
             response = self.client.post(
                 "/api/signup",
@@ -299,7 +299,7 @@ class TestClass(unittest.TestCase):
             assert user == None
             assert "error" in response.get_json()
             assert response.get_json()["error"] == "Invalid 2fa option."
-            assert response.status_code == 403
+            assert response.status_code == 400
 
     def test_logged_in_route(self):
         with self.app.app_context():

@@ -13,7 +13,7 @@ from .EmailController import sendMail
 def login(email, password, otp=None):
     user = getUser(email)
     if not user:
-        return ({"error": "Could not verify user"}, 401)
+        return ({"error": "Could not verify user"}, 404)
 
     if check_password_hash(user.password, password):
         token = generateToken(user)
@@ -21,17 +21,17 @@ def login(email, password, otp=None):
         if user.has2fa:
             if user.currentOtp and otp == user.currentOtp:
                 associateOtp(user, None)
-                return ({"token": token}, 201)
+                return ({"token": token}, 200)
             if otp:
                 return ({"error": "Could not verify otp"}, 401)
 
             newOtp = generateOTP()
             associateOtp(user, newOtp)
             if sendMail(user, newOtp):
-                return ({"message": "check your email"}, 200)
+                return ({"message": "Check your email"}, 201)
             return ({"error": "Error sending the validation email"}, 500)
         else:
-            return ({"token": token}, 201)
+            return ({"token": token}, 200)
     return ({"error": "Wrong email or password"}, 401)
 
 
@@ -40,7 +40,7 @@ def signup(params):
     user = getUser(email)
 
     if user:
-        return ({"message": "User already exists. Please Log in."}, 201)
+        return ({"message": "User already exists. Please Log in."}, 200)
 
     user = User(
         name=name, email=email, password=generate_password_hash(password), has2fa=has2fa
