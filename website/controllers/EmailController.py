@@ -9,7 +9,6 @@ from flask import current_app
 
 
 def validMailParams():
-    print(current_app.config["MAIL_USE_TLS"])
     return (
         current_app.config["MAIL_FROM_NAME"]
         and current_app.config["MAIL_SERVER"]
