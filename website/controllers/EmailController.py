@@ -9,19 +9,22 @@ from flask import current_app
 
 
 def validMailParams():
-    print(current_app.config["MAIL_USE_TLS"] )
-    return (current_app.config["MAIL_FROM_NAME"] and
-    current_app.config["MAIL_SERVER"] and
-    current_app.config["MAIL_PORT"] and
-    current_app.config["MAIL_USERNAME"] and
-    current_app.config["MAIL_PASSWORD"] and
-    isinstance(current_app.config["MAIL_USE_TLS"], bool))
+    print(current_app.config["MAIL_USE_TLS"])
+    return (
+        current_app.config["MAIL_FROM_NAME"]
+        and current_app.config["MAIL_SERVER"]
+        and current_app.config["MAIL_PORT"]
+        and current_app.config["MAIL_USERNAME"]
+        and current_app.config["MAIL_PASSWORD"]
+        and isinstance(current_app.config["MAIL_USE_TLS"], bool)
+    )
+
 
 def sendMail(user, otp):
     if not validMailParams():
         print(f"Error sending email. Invalid config. The otp is {otp}")
         return False
-    
+
     # this can be improved by using a queue
     try:
         msg = Message(
@@ -38,6 +41,5 @@ def sendMail(user, otp):
         mail.send(msg)
         return True
     except:
-        
         print(f"Error sending email. The otp is {otp}")
         return False

@@ -79,7 +79,7 @@ class TestClass(unittest.TestCase):
             )
             db.session.add(user)
             db.session.commit()
-            
+
             response = self.client.post(
                 "/api/login", json={"email": theMail, "password": "testPassword"}
             )
@@ -124,7 +124,10 @@ class TestClass(unittest.TestCase):
             response = self.client.post("/api/login", json={"email": "wrong_email"})
 
             assert "error" in response.get_json()
-            assert response.get_json()["error"] == "Could not verify. Missing email or password"
+            assert (
+                response.get_json()["error"]
+                == "Could not verify. Missing email or password"
+            )
             assert response.status_code == 400
 
     def test_missing_params_verify(self):
@@ -134,7 +137,10 @@ class TestClass(unittest.TestCase):
             )
 
             assert "error" in response.get_json()
-            assert response.get_json()["error"] == "Could not verify. Missing email or password"
+            assert (
+                response.get_json()["error"]
+                == "Could not verify. Missing email or password"
+            )
             assert response.status_code == 400
 
     def test_wrong_credentials_login(self):
@@ -330,3 +336,21 @@ class TestClass(unittest.TestCase):
             self.assertIn("users", response.get_json())
             self.assertEqual(len(response.get_json()["users"]), 2)
             self.assertEqual(response.status_code, 200)
+
+    def test_logged_in_route_missing_jwt(self):
+        with self.app.app_context():
+            response = self.client.get(
+                "/api/users",
+            )
+            self.assertIn("error", response.get_json())
+            assert response.get_json()["error"] == "Missing auth token. Please login."
+            self.assertEqual(response.status_code, 401)
+
+    def test_logged_in_route_missing_jwt(self):
+        with self.app.app_context():
+            response = self.client.get(
+                "/api/users", headers={"Authorization": "Bearer wrongToken"}
+            )
+            self.assertIn("error", response.get_json())
+            assert response.get_json()["error"] == "Invalid token."
+            self.assertEqual(response.status_code, 401)

@@ -26,7 +26,7 @@ def token_required(f):
         if "Authorization" in request.headers:
             token = request.headers["Authorization"].replace("Bearer ", "")
         if not token:
-            return jsonify({"error": "Missing auth token"}), 401
+            return jsonify({"error": "Missing auth token. Please login."}), 401
 
         try:
             data = jwt.decode(
@@ -34,7 +34,7 @@ def token_required(f):
             )
             current_user = User.query.filter_by(id=data["id"]).first()
         except:
-            return jsonify({"error": "Invalid token"}), 401
+            return jsonify({"error": "Invalid token."}), 401
         return f(current_user, *args, **kwargs)
 
     return decorated
