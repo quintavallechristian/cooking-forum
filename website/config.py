@@ -18,7 +18,7 @@ class ProductionConfig(Config):
     MAIL_PORT = os.getenv("MAIL_PORT")
     MAIL_USERNAME = os.getenv("MAIL_USERNAME")
     MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
-    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS")
+    MAIL_USE_TLS = None if os.getenv("MAIL_USE_TLS") is None else os.getenv("MAIL_USE_TLS") == "True"
     MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME")
 
 
@@ -34,9 +34,9 @@ class TestingConfig(Config):
 
     MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME")
 
-    MAIL_SERVER = os.getenv("MAIL_SERVER")
-    MAIL_PORT = os.getenv("MAIL_PORT")
-    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
-    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
-    MAIL_USE_TLS = os.getenv("MAIL_USE_TLS")
-    MAIL_FROM_NAME = os.getenv("MAIL_FROM_NAME")
+    MAIL_SERVER = 'smtp.mailtrap.io'
+    MAIL_PORT = 2525
+    MAIL_USERNAME = 'username'
+    MAIL_PASSWORD = 'password'
+    MAIL_USE_TLS = False
+    MAIL_FROM_NAME = 'testEmail'

@@ -56,6 +56,23 @@ class TestClass(unittest.TestCase):
             assert response["message"] == "check your email"
             assert code == 200
 
+    def test_correct_login_with_otp_not_sent(self):
+        with self.app.app_context():
+            self.app.config["MAIL_USERNAME"] = None
+            theMail = fake.email()
+            user = User(
+                email=theMail,
+                password=generate_password_hash("testPassword"),
+                name=fake.name(),
+                has2fa=True,
+            )
+            db.session.add(user)
+            db.session.commit()
+            response, code = login(theMail, "testPassword")
+            assert "error" in response
+            assert response["error"] == "Error sending the validation email"
+            assert code == 500
+
     def test_verifiy_otp(self):
         with self.app.app_context():
             theMail = fake.email()

@@ -7,6 +7,7 @@ from flask_mail import Message
 from random import randint
 from flask import current_app
 from .UserController import getUser
+from .EmailController import sendMail
 
 
 def login(email, password, otp=None):
@@ -26,8 +27,9 @@ def login(email, password, otp=None):
 
             newOtp = generateOTP()
             associateOtp(user, newOtp)
-            sendMail(user, newOtp)
-            return ({"message": "check your email"}, 200)
+            if sendMail(user, newOtp):
+                return ({"message": "check your email"}, 200)
+            return ({"error": "Error sending the validation email"}, 500)
         else:
             return ({"token": token}, 201)
     return ({"error": "Wrong email or password"}, 401)
@@ -66,19 +68,3 @@ def associateOtp(user, otp):
     user.currentOtp = otp
     db.session.add(user)
     db.session.commit()
-
-
-def sendMail(user, otp):
-    # this can be improved by using a queue
-    msg = Message(
-        "Complete your registration",
-        sender=current_app.config["MAIL_FROM_NAME"],
-        recipients=[user.email],
-    )
-    msg.body = f"""
-    Hi {user.name}!
-    In order to complete the login you must insert this code in your application! 
-    {otp}
-    If you did not try to login to the application simply ignore this email.
-    Regards, cooking forum team"""
-    mail.send(msg)

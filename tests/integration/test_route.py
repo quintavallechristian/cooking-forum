@@ -67,6 +67,27 @@ class TestClass(unittest.TestCase):
             assert response.get_json()["message"] == "check your email"
             assert response.status_code == 200
 
+    def test_correct_login_with_otp_not_sent(self):
+        with self.app.app_context():
+            self.app.config["MAIL_USERNAME"] = None
+            theMail = fake.email()
+            user = User(
+                email=theMail,
+                password=generate_password_hash("testPassword"),
+                name=fake.name(),
+                has2fa=True,
+            )
+            db.session.add(user)
+            db.session.commit()
+            
+            response = self.client.post(
+                "/api/login", json={"email": theMail, "password": "testPassword"}
+            )
+
+            assert "error" in response.get_json()
+            assert response.get_json()["error"] == "Error sending the validation email"
+            assert response.status_code == 500
+
     def test_verify_otp(self):
         with self.app.app_context():
             theMail = fake.email()
