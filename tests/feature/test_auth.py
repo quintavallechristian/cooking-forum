@@ -70,7 +70,8 @@ class TestClass(unittest.TestCase):
             db.session.commit()
             response, code = login(theMail, "testPassword")
             assert "error" in response
-            assert response["error"] == "Error sending the validation email"
+            assert "otp" in response
+            self.assertIn("Error sending the validation email", response["error"])
             assert code == 500
 
     def test_verify_otp(self):

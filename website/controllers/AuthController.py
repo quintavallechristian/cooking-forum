@@ -29,7 +29,7 @@ def login(email, password, otp=None):
             associateOtp(user, newOtp)
             if sendMail(user, newOtp):
                 return ({"message": "Check your email"}, 201)
-            return ({"error": "Error sending the validation email"}, 500)
+            return ({"error": "Error sending the validation email. Probably due to a misconfiguration in the email client. Use the otp state here to authenticate", "otp": newOtp}, 500)
         else:
             return ({"token": token}, 200)
     return ({"error": "Wrong email or password"}, 401)

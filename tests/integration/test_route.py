@@ -85,7 +85,8 @@ class TestClass(unittest.TestCase):
             )
 
             assert "error" in response.get_json()
-            assert response.get_json()["error"] == "Error sending the validation email"
+            assert "otp" in response.get_json()
+            self.assertIn("Error sending the validation email", response.get_json()["error"])
             assert response.status_code == 500
 
     def test_verify_otp(self):
