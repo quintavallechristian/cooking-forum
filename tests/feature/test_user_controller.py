@@ -10,6 +10,7 @@ from faker import Faker
 
 fake = Faker()
 
+
 class TestClass(unittest.TestCase):
     def setUp(self):
         self.app = Flask(__name__)
@@ -30,17 +31,27 @@ class TestClass(unittest.TestCase):
         with self.app.app_context():
             email = fake.email()
             name = fake.name()
-            user = User(email = email, password = generate_password_hash('testPassword'), name = name)
+            user = User(
+                email=email, password=generate_password_hash("testPassword"), name=name
+            )
             db.session.add(user)
             db.session.commit()
             self.assertEqual(UserController.getUser(email).email, user.email)
 
     def test_get_users(self):
         with self.app.app_context():
-            user1 = User(email = fake.email(), password = generate_password_hash('testPassword'), name = fake.name())
+            user1 = User(
+                email=fake.email(),
+                password=generate_password_hash("testPassword"),
+                name=fake.name(),
+            )
             db.session.add(user1)
-            user2 = User(email = fake.email(), password = generate_password_hash('testPassword'), name = fake.name())
+            user2 = User(
+                email=fake.email(),
+                password=generate_password_hash("testPassword"),
+                name=fake.name(),
+            )
             db.session.add(user2)
             db.session.commit()
-            
+
             self.assertEqual(len(UserController.getUsers()), 2)

@@ -8,6 +8,7 @@ from .config import ProductionConfig
 db = SQLAlchemy()
 mail = Mail()
 
+
 def create_app():
     app = Flask(__name__)
 
@@ -19,10 +20,9 @@ def create_app():
     from .api import api
     from .views import views
     from . import models
-    
-    app.register_blueprint(api, url_prefix='/api')
-    app.register_blueprint(views)
 
+    app.register_blueprint(api, url_prefix="/api")
+    app.register_blueprint(views)
 
     with app.app_context():
         db.create_all()
